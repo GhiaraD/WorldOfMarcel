@@ -1,4 +1,6 @@
-package WorldOfMarcel;
+package WorldOfMarcel.Pages;
+
+import WorldOfMarcel.Account;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -8,7 +10,7 @@ import java.util.ArrayList;
 
 public class ChooseAccountPage extends JFrame {
 
-    public ChooseAccountPage(ArrayList<Account> accounts){
+    public ChooseAccountPage(ArrayList<Account> accounts) {
         super("Choose Account and Character");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(500, 500));
@@ -27,7 +29,7 @@ public class ChooseAccountPage extends JFrame {
         setVisible(true);
     }
 
-    private void chooseAccountAndCharacter(){
+    private void chooseAccountAndCharacter() {
     }
 
     private static void addAButton(String text, Container container) {

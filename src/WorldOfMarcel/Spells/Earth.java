@@ -1,20 +1,22 @@
-package WorldOfMarcel;
+package WorldOfMarcel.Spells;
 
-public class Ice extends Spell {
-    public Ice() {
-        damage = 500;
-        mana = 300;
+import WorldOfMarcel.Entity;
+
+public class Earth extends Spell {
+    public Earth() {
+        damage = 400;
+        mana = 200;
     }
 
     @Override
     public void visit(Entity entity) {
-        if (!entity.ice)
+        if (!entity.earth)
             entity.receiveDamage(damage);
     }
 
     @Override
     public String toString() {
-        return "Ice Spell -> " +
+        return "Earth Spell -> " +
                 "damage = " + damage +
                 ",  mana = " + mana;
     }

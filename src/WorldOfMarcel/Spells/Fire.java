@@ -1,4 +1,6 @@
-package WorldOfMarcel;
+package WorldOfMarcel.Spells;
+
+import WorldOfMarcel.Entity;
 
 public class Fire extends Spell {
     public Fire() {

@@ -1,23 +1,27 @@
 package WorldOfMarcel;
 
+import WorldOfMarcel.Characters.Character;
+import WorldOfMarcel.Potions.Potion;
+import WorldOfMarcel.Spells.*;
+
 import java.util.List;
 import java.util.Random;
 
 public abstract class Entity implements Element<Entity> {
-    List<Spell> spells;
-    int currentHealth;
-    int maxHealth;
-    int currentMana;
-    int maxMana;
-    boolean fire;
-    boolean ice;
-    boolean earth;
+    public List<Spell> spells;
+    public int currentHealth;
+    public int maxHealth;
+    public int currentMana;
+    public int maxMana;
+    public boolean fire;
+    public boolean ice;
+    public boolean earth;
 
-    void regenHealth(int value) {
+    public void regenHealth(int value) {
         currentHealth = Math.min(maxHealth, currentHealth + value);
     }
 
-    void regenMana(int value) {
+    public void regenMana(int value) {
         currentMana = Math.min(maxMana, currentMana + value);
     }
 
@@ -38,9 +42,9 @@ public abstract class Entity implements Element<Entity> {
         return true;
     }
 
-    void makeAutomatedAttack(Entity target) {
+    public void makeAutomatedAttack(Entity target) {
         List<Spell> spells = this.spells;
-        boolean usedSpell = false;
+        boolean usedSpell;
         boolean usedPotion = false;
         Random random = new Random();
 
@@ -62,7 +66,7 @@ public abstract class Entity implements Element<Entity> {
         }
     }
 
-    abstract void receiveDamage(int value);
+    public abstract void receiveDamage(int value);
 
-    abstract int getDamage();
+    public abstract int getDamage();
 }

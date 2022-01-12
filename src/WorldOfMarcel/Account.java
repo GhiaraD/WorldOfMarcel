@@ -1,5 +1,8 @@
 package WorldOfMarcel;
 
+import WorldOfMarcel.Characters.Character;
+import WorldOfMarcel.Exceptions.InformationIncompleteException;
+
 import java.util.List;
 import java.util.TreeSet;
 

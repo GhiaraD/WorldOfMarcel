@@ -1,4 +1,4 @@
-package WorldOfMarcel;
+package WorldOfMarcel.Characters;
 
 public class CharacterFactory {
 

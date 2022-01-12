@@ -1,12 +1,14 @@
-package WorldOfMarcel;
+package WorldOfMarcel.Map;
+
+import WorldOfMarcel.Characters.Character;
 
 import java.util.ArrayList;
 
 public class Grid extends ArrayList<ArrayList<Cell>> {
-    int length;
-    int width;
-    Character currentCharacter;
-    Cell currentCell;
+    public int length;
+    public int width;
+    public Character currentCharacter;
+    public Cell currentCell;
 
     private Grid(int length, int width, Character currentCharacter) {
         this.length = length;
@@ -15,8 +17,8 @@ public class Grid extends ArrayList<ArrayList<Cell>> {
         this.currentCell = null;
     }
 
-    static Grid generateGrid(int length, int width, Character currentCharacter) {
-        Grid map = new Grid(length, width, currentCharacter);
+    public static Grid generateGrid(int length, int width, Character currentCharacter) {
+        // Grid map = new Grid(length, width, currentCharacter);
 //
 //        for (int i = 0; i < length; ++i) {
 //            ArrayList<Cell> gridRow = new ArrayList<>();
@@ -28,13 +30,13 @@ public class Grid extends ArrayList<ArrayList<Cell>> {
 //            }
 //            map.add(gridRow);
 //        }
-        return map;
+        return null;
     }
 
     // shops: 0,3; 1,3; 2,0.
     // enemies: 3,4
     // finish: 4,4
-    static Grid generateTestGrid(Character currentCharacter) {
+    public static Grid generateTestGrid(Character currentCharacter) {
         int length = 5;
         int width = 5;
         Grid map = new Grid(length, width, currentCharacter);
@@ -45,14 +47,14 @@ public class Grid extends ArrayList<ArrayList<Cell>> {
                 Cell gridCell;
                 if ((i == 0 && j == 3) || (i == 1 && j == 3) || (i == 2 && j == 0)) {
                     Shop shop = new Shop(true);
-                    gridCell = new Cell(i, j, CellEnum.SHOP, shop, false);
+                    gridCell = new Cell(i, j, Cell.CellEnum.SHOP, shop, false);
                 } else if (i == 3 && j == 4) {
                     Enemy enemy = new Enemy();
-                    gridCell = new Cell(i, j, CellEnum.ENEMY, enemy, false);
+                    gridCell = new Cell(i, j, Cell.CellEnum.ENEMY, enemy, false);
                 } else if (i == 4 && j == 4) {
-                    gridCell = new Cell(i, j, CellEnum.FINISH, null, false);
+                    gridCell = new Cell(i, j, Cell.CellEnum.FINISH, null, false);
                 } else {
-                    gridCell = new Cell(i, j, CellEnum.EMPTY, null, false);
+                    gridCell = new Cell(i, j, Cell.CellEnum.EMPTY, null, false);
                 }
                 gridRow.add(gridCell);
                 // 2 shops and 4 enemies minimum
@@ -66,7 +68,7 @@ public class Grid extends ArrayList<ArrayList<Cell>> {
         return map;
     }
 
-    void printGrid() {
+    public void printGrid() {
         for (int i = 0; i < length; ++i) {
             for (int j = 0; j < width; ++j) {
                 boolean char1 = false;
@@ -79,13 +81,13 @@ public class Grid extends ArrayList<ArrayList<Cell>> {
                         print.append('P');
                         char1 = true;
                     }
-                    if (get(i).get(j).type == CellEnum.FINISH) {
+                    if (get(i).get(j).type == Cell.CellEnum.FINISH) {
                         print.append("F  ");
                         char2 = true;
-                    } else if (get(i).get(j).type != CellEnum.EMPTY) {
+                    } else if (get(i).get(j).type != Cell.CellEnum.EMPTY) {
                         print.append(get(i).get(j).cellElement.toCharacter()).append("  ");
                         char2 = true;
-                    } else if (get(i).get(j).type == CellEnum.EMPTY && !char1) {
+                    } else if (get(i).get(j).type == Cell.CellEnum.EMPTY && !char1) {
                         print.append("N  ");
                     } else {
                         print.append("  ");
@@ -99,11 +101,11 @@ public class Grid extends ArrayList<ArrayList<Cell>> {
         }
     }
 
-    void getCurrentCell() {
+    private void getCurrentCell() {
         currentCell = get(currentCharacter.oy).get(currentCharacter.ox);
     }
 
-    void goNorth() {
+    public void goNorth() {
         if (currentCharacter.oy == 0) {
             System.out.println("You cannot do that move.");
             return;
@@ -112,7 +114,7 @@ public class Grid extends ArrayList<ArrayList<Cell>> {
         getCurrentCell();
     }
 
-    void goSouth() {
+    public void goSouth() {
         if (currentCharacter.oy == length - 1) {
             System.out.println("You cannot do that move.");
             return;
@@ -121,7 +123,7 @@ public class Grid extends ArrayList<ArrayList<Cell>> {
         getCurrentCell();
     }
 
-    void goWest() {
+    public void goWest() {
         if (currentCharacter.ox == 0) {
             System.out.println("You cannot do that move.");
             return;
@@ -130,7 +132,7 @@ public class Grid extends ArrayList<ArrayList<Cell>> {
         getCurrentCell();
     }
 
-    void goEast() {
+    public void goEast() {
         if (currentCharacter.ox == width - 1) {
             System.out.println("You cannot do that move.");
             return;

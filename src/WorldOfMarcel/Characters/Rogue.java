@@ -1,34 +1,36 @@
-package WorldOfMarcel;
+package WorldOfMarcel.Characters;
+
+import WorldOfMarcel.Spells.Earth;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Warrior extends Character {
-    private static final int DMG = 400;
+public class Rogue extends Character {
+    private static final int DMG = 300;
 
-    public Warrior(String name, int XP, int Lvl) {
+    public Rogue(String name, int XP, int Lvl) {
         super(name, XP, Lvl);
-        maxHealth = 3000;
+        maxHealth = 2000;
         currentHealth = maxHealth;
-        maxMana = 200;
+        maxMana = 400;
         currentMana = maxMana;
         cha = Lvl / 2 + 1;
-        str = Lvl + 1;
-        dex = Lvl / 2 + 1;
-        inventory = new Inventory(20);
-        fire = true;
+        str = Lvl / 2 + 1;
+        dex = Lvl + 2;
+        inventory = new Inventory(14);
+        fire = false;
         ice = false;
-        earth = false;
+        earth = true;
         spells = new ArrayList<>();
-        spells.add(new Fire());
+        spells.add(new Earth());
     }
 
     @Override
-    void receiveDamage(int value) {
+    public void receiveDamage(int value) {
         Random rand = new Random();
         // start with a 25% chance of getting half damage that grows each level
         int halfChance = rand.nextInt(100) + 1;
-        halfChance += dex + cha - 1;
+        halfChance += str + cha - 1;
         value = halfChance >= 75 ? value / 2 : value;
 
         int newHealth = currentHealth - value;
@@ -36,11 +38,11 @@ public class Warrior extends Character {
     }
 
     @Override
-    int getDamage() {
+    public int getDamage() {
         Random rand = new Random();
         // start with a 25% chance of dealing double damage that grows each level
         int halfChance = rand.nextInt(100) + 1;
-        halfChance += str - 2;
+        halfChance += dex - 2;
         System.out.println("You hit with a normal attack!");
         return halfChance >= 75 ? DMG * 2 : DMG;
     }

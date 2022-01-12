@@ -1,4 +1,4 @@
-package WorldOfMarcel;
+package WorldOfMarcel.Exceptions;
 
 public class InvalidCommandException extends Exception{
 

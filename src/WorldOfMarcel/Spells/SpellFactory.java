@@ -1,4 +1,4 @@
-package WorldOfMarcel;
+package WorldOfMarcel.Spells;
 
 public class SpellFactory {
 

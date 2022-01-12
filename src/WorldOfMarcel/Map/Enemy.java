@@ -1,4 +1,8 @@
-package WorldOfMarcel;
+package WorldOfMarcel.Map;
+
+import WorldOfMarcel.Entity;
+import WorldOfMarcel.Spells.SpellFactory;
+import WorldOfMarcel.Spells.Visitor;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -49,7 +53,7 @@ public class Enemy extends Entity implements CellElement {
     }
 
     @Override
-    void receiveDamage(int value) {
+    public void receiveDamage(int value) {
         // 50% chance to receive half damage
         Random rand = new Random();
         int randomNum = rand.nextInt(2);
@@ -66,7 +70,7 @@ public class Enemy extends Entity implements CellElement {
     }
 
     @Override
-    int getDamage() {
+    public int getDamage() {
         Random rand = new Random();
         int randomNum = rand.nextInt((MAX_DMG - MIN_DMG) + 1) + MIN_DMG;
         int dmg = randomNum;

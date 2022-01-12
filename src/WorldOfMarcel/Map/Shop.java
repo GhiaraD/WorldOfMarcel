@@ -1,11 +1,16 @@
-package WorldOfMarcel;
+package WorldOfMarcel.Map;
+
+import WorldOfMarcel.Map.CellElement;
+import WorldOfMarcel.Potions.HealthPotion;
+import WorldOfMarcel.Potions.ManaPotion;
+import WorldOfMarcel.Potions.Potion;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class Shop implements CellElement {
-    List<Potion> potions;
+    public List<Potion> potions;
 
     public Shop(boolean test) {
         potions = new ArrayList<>();

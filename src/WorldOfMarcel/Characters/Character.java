@@ -1,15 +1,19 @@
-package WorldOfMarcel;
+package WorldOfMarcel.Characters;
+
+import WorldOfMarcel.Entity;
+import WorldOfMarcel.Potions.Potion;
+import WorldOfMarcel.Spells.Visitor;
 
 public abstract class Character extends Entity {
-    String characterName;
-    int ox;
-    int oy;
-    Inventory inventory;
-    int XP;
-    int Lvl;
-    int str;
-    int cha;
-    int dex;
+    public String characterName;
+    public int ox;
+    public int oy;
+    public Inventory inventory;
+    public int XP;
+    public int Lvl;
+    public int str;
+    public int cha;
+    public int dex;
 
     public Character(String name, int XP, int Lvl) {
         characterName = name;

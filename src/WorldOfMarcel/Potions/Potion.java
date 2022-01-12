@@ -1,4 +1,6 @@
-package WorldOfMarcel;
+package WorldOfMarcel.Potions;
+
+import WorldOfMarcel.Entity;
 
 public interface Potion {
     void usePotion(Entity entity);

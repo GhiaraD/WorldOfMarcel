@@ -1,4 +1,4 @@
-package WorldOfMarcel;
+package WorldOfMarcel.Exceptions;
 
 public class InformationIncompleteException extends Exception {
 

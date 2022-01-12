@@ -1,17 +1,25 @@
 package WorldOfMarcel;
 
+import WorldOfMarcel.Characters.Character;
+import WorldOfMarcel.Characters.CharacterFactory;
+import WorldOfMarcel.Exceptions.InformationIncompleteException;
+import WorldOfMarcel.Exceptions.InvalidCommandException;
+import WorldOfMarcel.Map.Cell;
+import WorldOfMarcel.Map.Cell.CellEnum;
+import WorldOfMarcel.Map.Enemy;
+import WorldOfMarcel.Map.Grid;
+import WorldOfMarcel.Map.Shop;
+import WorldOfMarcel.Potions.Potion;
+import WorldOfMarcel.Spells.Spell;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.List;
 
-public class Game{
+public class Game {
     List<Account> accounts;
     Map<CellEnum, List<String>> stories;
     private static Game instance = null;
@@ -37,7 +45,7 @@ public class Game{
         System.out.println("'2' - for a colorful GUI experience");
         Scanner input = new Scanner(System.in);
         int gameMode = input.nextInt();
-        if (gameMode == 2){
+        if (gameMode == 2) {
             parseAccountsJSON();
         }
 
@@ -193,7 +201,7 @@ public class Game{
                 characters.add(new CharacterFactory().buildCharacter(profession, characterName, experience, level));
             }
 
-            Account.Information.InformationBuilder informationBuilder = null;
+            Account.Information.InformationBuilder informationBuilder;
             try {
                 informationBuilder = new Account.Information.InformationBuilder(credentials, name).setFavoriteGames(games).setCountry(country);
             } catch (InformationIncompleteException e) {
