@@ -39,4 +39,9 @@ public abstract class Character extends Entity {
         System.out.println("You have been hit by a " + spell.getClass().getSimpleName() + " spell!");
         spell.visit(this);
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + ", name: " + characterName + ", level: " + Lvl;
+    }
 }

@@ -9,6 +9,7 @@ import WorldOfMarcel.Map.Cell.CellEnum;
 import WorldOfMarcel.Map.Enemy;
 import WorldOfMarcel.Map.Grid;
 import WorldOfMarcel.Map.Shop;
+import WorldOfMarcel.Pages.ChooseAccountPage;
 import WorldOfMarcel.Potions.Potion;
 import WorldOfMarcel.Spells.Spell;
 import org.apache.commons.io.FileUtils;
@@ -45,66 +46,70 @@ public class Game {
         System.out.println("'2' - for a colorful GUI experience");
         Scanner input = new Scanner(System.in);
         int gameMode = input.nextInt();
+        parseAccountsJSON();
+        parseStoriesJSON();
         if (gameMode == 2) {
-            parseAccountsJSON();
+            new ChooseAccountPage(accounts, stories);
         }
-
         // automated test
         else {
-            parseAccountsJSON();
-            parseStoriesJSON();
             Account currentAccount = chooseAccount();
             Character currentCharacter = chooseCharacter(currentAccount);
 
             // Start game
             System.out.println("Generating map...\n");
-            Grid map = Grid.generateTestGrid(currentCharacter);
-            int moves = 0; // the test has 8 moves on the map
-            while (currentCharacter.currentHealth > 0) {
-                if (!map.currentCell.visited) {
-                    printStory(map.currentCell);
-                    gainUnvisitedCellXP(currentCharacter);
-                    getMoneyMaybe(currentCharacter, false);
-                }
-                map.currentCell.visited = true;
-                map.printGrid();
+            Grid map = Grid.generateTestGrid(5, 5, currentCharacter);
+            gameLoop(currentCharacter, map);
+        }
+    }
 
-                String command = optionsAndTakeNextCommand(currentCharacter, map.currentCell, input);
-                if (map.currentCell.type == CellEnum.ENEMY && ((Enemy) map.currentCell.cellElement).currentHealth > 0) {
-                    Enemy enemy = (Enemy) map.currentCell.cellElement;
-                    // Fight
-                    while (enemy.currentHealth > 0 && currentCharacter.currentHealth > 0) {
-                        currentCharacter.makeAutomatedAttack(enemy);
-                        if (enemy.currentHealth > 0)
-                            enemy.makeAutomatedAttack(currentCharacter);
-                        System.out.println("Health: You-> " + currentCharacter.currentHealth + '/' + currentCharacter.maxHealth + "   Enemy-> " + enemy.currentHealth + '/' + enemy.maxHealth);
-                        System.out.println("Mana: You-> " + currentCharacter.currentMana + '/' + currentCharacter.maxMana + "   Enemy-> " + enemy.currentMana + '/' + enemy.maxMana + '\n');
-                        if (enemy.currentHealth >= 0)
-                            command = optionsAndTakeNextCommand(currentCharacter, map.currentCell, input);
-                    }
-                    gainFightXP(currentCharacter);
-                    getMoneyMaybe(currentCharacter, true);
-                } else if (map.currentCell.type == CellEnum.SHOP && ((Shop) map.currentCell.cellElement).potions.size() > 0) {
-                    List<Potion> potions = ((Shop) map.currentCell.cellElement).potions;
-                    // add first potion
-                    currentCharacter.inventory.potions.add(potions.get(0));
-                    potions.remove(0);
-                    // add second potion
-                    currentCharacter.inventory.potions.add(potions.get(0));
-                    potions.remove(0);
-                    System.out.println("You bought 2 potions!");
-                } else if (map.currentCell.type == CellEnum.FINISH) {
-                    return;
-                }
-
-                // 4 moves to the right, 4 down
-                if (moves < 4) {
-                    map.goEast();
-                } else {
-                    map.goSouth();
-                }
-                moves++;
+    public void gameLoop(Character currentCharacter, Grid map) {
+        Scanner input = new Scanner(System.in);
+        int moves = 0; // the test has 8 moves on the map
+        while (currentCharacter.currentHealth > 0) {
+            if (!map.currentCell.visited) {
+                printStory(map.currentCell);
+                gainUnvisitedCellXP(currentCharacter);
+                getMoneyMaybe(currentCharacter, false);
             }
+            map.currentCell.visited = true;
+            map.printGrid();
+
+            String command = optionsAndTakeNextCommand(currentCharacter, map.currentCell, input);
+            if (map.currentCell.type == CellEnum.ENEMY && ((Enemy) map.currentCell.cellElement).currentHealth > 0) {
+                Enemy enemy = (Enemy) map.currentCell.cellElement;
+                // Fight
+                while (enemy.currentHealth > 0 && currentCharacter.currentHealth > 0) {
+                    currentCharacter.makeAutomatedAttack(enemy);
+                    if (enemy.currentHealth > 0)
+                        enemy.makeAutomatedAttack(currentCharacter);
+                    System.out.println("Health: You-> " + currentCharacter.currentHealth + '/' + currentCharacter.maxHealth + "   Enemy-> " + enemy.currentHealth + '/' + enemy.maxHealth);
+                    System.out.println("Mana: You-> " + currentCharacter.currentMana + '/' + currentCharacter.maxMana + "   Enemy-> " + enemy.currentMana + '/' + enemy.maxMana + '\n');
+                    if (enemy.currentHealth >= 0)
+                        command = optionsAndTakeNextCommand(currentCharacter, map.currentCell, input);
+                }
+                gainFightXP(currentCharacter);
+                getMoneyMaybe(currentCharacter, true);
+            } else if (map.currentCell.type == CellEnum.SHOP && ((Shop) map.currentCell.cellElement).potions.size() > 0) {
+                List<Potion> potions = ((Shop) map.currentCell.cellElement).potions;
+                // add first potion
+                currentCharacter.inventory.potions.add(potions.get(0));
+                potions.remove(0);
+                // add second potion
+                currentCharacter.inventory.potions.add(potions.get(0));
+                potions.remove(0);
+                System.out.println("You bought 2 potions!");
+            } else if (map.currentCell.type == CellEnum.FINISH) {
+                return;
+            }
+
+            // 4 moves to the right, 4 down
+            if (moves < 4) {
+                map.goEast();
+            } else {
+                map.goSouth();
+            }
+            moves++;
         }
     }
 
@@ -164,7 +169,7 @@ public class Game {
     }
 
     private void parseAccountsJSON() throws IOException {
-        File file = new File("src/WorldOfMarcel/res/accounts.json");
+        File file = new File("res/accounts.json");
         String accountsToString = FileUtils.readFileToString(file, "utf-8");
         JSONObject accountsToJson = new JSONObject(accountsToString);
         JSONArray jsonArray = (JSONArray) accountsToJson.get("accounts");
@@ -215,7 +220,7 @@ public class Game {
     }
 
     private void parseStoriesJSON() throws IOException {
-        File file = new File("src/WorldOfMarcel/res/stories.json");
+        File file = new File("res/stories.json");
         String storiesToString = FileUtils.readFileToString(file, "utf-8");
         JSONObject storiesToJson = new JSONObject(storiesToString);
         JSONArray jsonArrayStories = (JSONArray) storiesToJson.get("stories");

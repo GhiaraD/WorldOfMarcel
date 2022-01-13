@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.TreeSet;
 
 public class Account {
-    Information info;
-    List<Character> accountCharacters;
-    int nrPlayedGames;
+    public Information info;
+    public List<Character> accountCharacters;
+    public int nrPlayedGames;
 
     public Account(Information info, List<Character> accountCharacters, int nrPlayedGames) {
         this.info = info;
@@ -17,11 +17,11 @@ public class Account {
         this.nrPlayedGames = nrPlayedGames;
     }
 
-    static class Information {
-        Credentials credentials;
-        TreeSet<String> favoriteGames;
-        String name;
-        String country;
+    public static class Information {
+        public Credentials credentials;
+        public TreeSet<String> favoriteGames;
+        public String name;
+        public String country;
 
         private Information(InformationBuilder builder) {
             this.credentials = builder.credentials;
@@ -57,5 +57,10 @@ public class Account {
                 return new Information(this);
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return info.name + "  " + info.credentials.getEmail();
     }
 }

@@ -21,4 +21,16 @@ public class Cell {
         SHOP,
         FINISH
     }
+
+    void placeEnemy() {
+        Enemy enemy = new Enemy();
+        type = Cell.CellEnum.ENEMY;
+        cellElement = enemy;
+    }
+
+    void placeShop() {
+        Shop shop = new Shop(true);
+        type = Cell.CellEnum.SHOP;
+        cellElement = shop;
+    }
 }
