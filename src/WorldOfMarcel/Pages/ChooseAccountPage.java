@@ -2,7 +2,6 @@ package WorldOfMarcel.Pages;
 
 import WorldOfMarcel.Account;
 import WorldOfMarcel.Characters.Character;
-import WorldOfMarcel.Map.Cell;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -12,14 +11,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.Map;
 
 public class ChooseAccountPage extends JFrame {
     List<Character> characters = null;
     Account selectedAccount = null;
     Character selectedCharacter = null;
+    GamePage gamePage = null;
 
-    public ChooseAccountPage(List<Account> accounts, Map<Cell.CellEnum, List<String>> stories) {
+    public ChooseAccountPage(List<Account> accounts) {
         super("Choose Account and Character");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(600, 500));
@@ -68,9 +67,9 @@ public class ChooseAccountPage extends JFrame {
                 if (selectedCharacter == null) return;
                 if (passwordField.getText().equals(selectedAccount.info.credentials.getPassword())) {
                     System.out.println("It worked!");
-                    setVisible(false); //you can't see me!
-                    dispose(); //Destroy the JFrame object
-                    new GamePage(selectedCharacter, stories);
+                    setVisible(false);
+                    dispose();
+                    gamePage = new GamePage(selectedCharacter);
                 }
             }
         });

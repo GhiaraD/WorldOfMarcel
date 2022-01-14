@@ -25,7 +25,7 @@ public abstract class Entity implements Element<Entity> {
         currentMana = Math.min(maxMana, currentMana + value);
     }
 
-    boolean useSpell(Spell spell, Entity enemy) {
+    public boolean useSpell(Spell spell, Entity enemy) {
         if (currentMana < spell.mana) {
             if (this instanceof Character)
                 System.out.println("Not enough mana!");

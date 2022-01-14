@@ -29,7 +29,7 @@ public class Cell {
     }
 
     void placeShop() {
-        Shop shop = new Shop(true);
+        Shop shop = new Shop(false);
         type = Cell.CellEnum.SHOP;
         cellElement = shop;
     }

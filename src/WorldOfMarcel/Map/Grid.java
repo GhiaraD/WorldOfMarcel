@@ -86,7 +86,6 @@ public class Grid extends ArrayList<ArrayList<Cell>> {
         return map;
     }
 
-
     public void printGrid() {
         for (int i = 0; i < length; ++i) {
             for (int j = 0; j < width; ++j) {

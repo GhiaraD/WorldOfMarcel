@@ -25,12 +25,13 @@ public class Enemy extends Entity implements CellElement {
         maxMana = randomNum;
         currentMana = randomNum;
 
-        randomNum = rand.nextInt(2);
-        fire = randomNum == 1;
-        randomNum = rand.nextInt(2);
-        ice = randomNum == 1;
-        randomNum = rand.nextInt(2);
-        earth = randomNum == 1;
+        // each protection has a 1/4 chance to appear
+        randomNum = rand.nextInt(4);
+        fire = randomNum == 0;
+        randomNum = rand.nextInt(4);
+        ice = randomNum == 0;
+        randomNum = rand.nextInt(4);
+        earth = randomNum == 0;
 
         randomNum = rand.nextInt(3);
         String element;

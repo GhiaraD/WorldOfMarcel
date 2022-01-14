@@ -49,7 +49,7 @@ public class Game {
         parseAccountsJSON();
         parseStoriesJSON();
         if (gameMode == 2) {
-            new ChooseAccountPage(accounts, stories);
+            new ChooseAccountPage(accounts);
         }
         // automated test
         else {
@@ -59,12 +59,11 @@ public class Game {
             // Start game
             System.out.println("Generating map...\n");
             Grid map = Grid.generateTestGrid(5, 5, currentCharacter);
-            gameLoop(currentCharacter, map);
+            testGameLoop(currentCharacter, map);
         }
     }
 
-    public void gameLoop(Character currentCharacter, Grid map) {
-        Scanner input = new Scanner(System.in);
+    public void testGameLoop(Character currentCharacter, Grid map) {
         int moves = 0; // the test has 8 moves on the map
         while (currentCharacter.currentHealth > 0) {
             if (!map.currentCell.visited) {
@@ -75,7 +74,7 @@ public class Game {
             map.currentCell.visited = true;
             map.printGrid();
 
-            String command = optionsAndTakeNextCommand(currentCharacter, map.currentCell, input);
+            optionsAndTakeNextCommand(currentCharacter, map.currentCell, true);
             if (map.currentCell.type == CellEnum.ENEMY && ((Enemy) map.currentCell.cellElement).currentHealth > 0) {
                 Enemy enemy = (Enemy) map.currentCell.cellElement;
                 // Fight
@@ -86,7 +85,7 @@ public class Game {
                     System.out.println("Health: You-> " + currentCharacter.currentHealth + '/' + currentCharacter.maxHealth + "   Enemy-> " + enemy.currentHealth + '/' + enemy.maxHealth);
                     System.out.println("Mana: You-> " + currentCharacter.currentMana + '/' + currentCharacter.maxMana + "   Enemy-> " + enemy.currentMana + '/' + enemy.maxMana + '\n');
                     if (enemy.currentHealth >= 0)
-                        command = optionsAndTakeNextCommand(currentCharacter, map.currentCell, input);
+                        optionsAndTakeNextCommand(currentCharacter, map.currentCell, true);
                 }
                 gainFightXP(currentCharacter);
                 getMoneyMaybe(currentCharacter, true);
@@ -113,7 +112,7 @@ public class Game {
         }
     }
 
-    public String optionsAndTakeNextCommand(Character currentCharacter, Cell currentCell, Scanner input) {
+    public String optionsAndTakeNextCommand(Character currentCharacter, Cell currentCell, boolean test) {
         String command = "";
 
         if (currentCell.type == CellEnum.ENEMY && ((Enemy) currentCell.cellElement).currentHealth > 0) {
@@ -145,30 +144,39 @@ public class Game {
             System.out.println("3 - Go south");
             System.out.println("4 - Go west");
         }
-        while (!command.equals("P"))
-            try {
-                command = readCommand(input);
-            } catch (InvalidCommandException e) {
-                System.out.println("Try 'P'");
-            }
+        if (test)
+            while (!command.equals("P"))
+                try {
+                    command = readPCommand();
+                } catch (InvalidCommandException e) {
+                    System.out.println("Try 'P'");
+                }
+        else
+            command = readCommand();
         return command;
     }
 
-    private String readCommand(Scanner input) throws InvalidCommandException {
+    public String readCommand() {
+        Scanner input = new Scanner(System.in);
+        return input.next();
+    }
+
+    public String readPCommand() throws InvalidCommandException {
+        Scanner input = new Scanner(System.in);
         String command = input.next();
         if (!command.equals("P"))
             throw new InvalidCommandException();
         return command;
     }
 
-    private void printStory(Cell currentCell) {
+    public void printStory(Cell currentCell) {
         CellEnum cellType = currentCell.type;
         Random rand = new Random();
         int randomNum = rand.nextInt(stories.get(cellType).size());
         System.out.print('\n' + stories.get(cellType).get(randomNum) + '\n');
     }
 
-    private void parseAccountsJSON() throws IOException {
+    public void parseAccountsJSON() throws IOException {
         File file = new File("res/accounts.json");
         String accountsToString = FileUtils.readFileToString(file, "utf-8");
         JSONObject accountsToJson = new JSONObject(accountsToString);
@@ -219,7 +227,7 @@ public class Game {
         }
     }
 
-    private void parseStoriesJSON() throws IOException {
+    public void parseStoriesJSON() throws IOException {
         File file = new File("res/stories.json");
         String storiesToString = FileUtils.readFileToString(file, "utf-8");
         JSONObject storiesToJson = new JSONObject(storiesToString);
@@ -240,7 +248,7 @@ public class Game {
         }
     }
 
-    private Account chooseAccount() {
+    public Account chooseAccount() {
         Scanner input = new Scanner(System.in);
         System.out.println("Loading data...");
         int accountIndex = 1;
@@ -255,7 +263,7 @@ public class Game {
             System.out.println("Please choose the account you want to log in as, typing the corresponding number:");
             while (!command.equals("P"))
                 try {
-                    command = readCommand(input);
+                    command = readPCommand();
                 } catch (InvalidCommandException e) {
                     System.out.println("Try 'P'");
                 }
@@ -269,7 +277,7 @@ public class Game {
 
             while (!pass.equals("P"))
                 try {
-                    pass = readCommand(input);
+                    pass = readPCommand();
                 } catch (InvalidCommandException e) {
                     System.out.println("Try 'P'");
                 }
@@ -284,7 +292,7 @@ public class Game {
         return currentAccount;
     }
 
-    private Character chooseCharacter(Account currentAccount) {
+    public Character chooseCharacter(Account currentAccount) {
         Scanner input = new Scanner(System.in);
         System.out.println("Fetching your characters...");
         List<Character> characters = currentAccount.accountCharacters;
@@ -297,7 +305,7 @@ public class Game {
         String command = "";
         while (!command.equals("P"))
             try {
-                command = readCommand(input);
+                command = readPCommand();
             } catch (InvalidCommandException e) {
                 System.out.println("Try 'P'");
             }
@@ -335,7 +343,7 @@ public class Game {
         checkLevel(currentCharacter);
     }
 
-    private void checkLevel(Character currentCharacter) {
+    public void checkLevel(Character currentCharacter) {
         if (currentCharacter.XP >= 100) {
             int difference = currentCharacter.XP - 100;
             currentCharacter.Lvl++;

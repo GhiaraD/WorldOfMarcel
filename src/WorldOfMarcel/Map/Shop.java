@@ -1,6 +1,5 @@
 package WorldOfMarcel.Map;
 
-import WorldOfMarcel.Map.CellElement;
 import WorldOfMarcel.Potions.HealthPotion;
 import WorldOfMarcel.Potions.ManaPotion;
 import WorldOfMarcel.Potions.Potion;
@@ -34,7 +33,9 @@ public class Shop implements CellElement {
         }
     }
 
-    Potion selectPotion(int index) {
+    public Potion selectPotion(int index) {
+        if (index >= potions.size())
+            return null;
         Potion potion = potions.get(index);
         potions.remove(index);
         return potion;
