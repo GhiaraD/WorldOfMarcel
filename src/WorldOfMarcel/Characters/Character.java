@@ -23,11 +23,11 @@ public abstract class Character extends Entity {
 
     void buyPotion(Potion potion) {
         if (inventory.getRemainingWeight() < potion.getWeight()) {
-            System.out.println("nu ai suficient spatiu in inverntar");
+            System.out.println("You don't have enough inventory space!");
             return;
         }
         if (inventory.coins < potion.getPrice()) {
-            System.out.println("nu ai suficienti bani");
+            System.out.println("You don't have enough coins!");
             return;
         }
         inventory.addPotion(potion);
@@ -38,5 +38,10 @@ public abstract class Character extends Entity {
     public void accept(Visitor<Entity> spell) {
         System.out.println("You have been hit by a " + spell.getClass().getSimpleName() + " spell!");
         spell.visit(this);
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + ", name: " + characterName + ", level: " + Lvl;
     }
 }

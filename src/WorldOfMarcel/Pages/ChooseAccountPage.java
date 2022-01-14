@@ -1,41 +1,84 @@
 package WorldOfMarcel.Pages;
 
 import WorldOfMarcel.Account;
+import WorldOfMarcel.Characters.Character;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.print.Book;
-import java.util.ArrayList;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 public class ChooseAccountPage extends JFrame {
+    List<Character> characters = null;
+    Account selectedAccount = null;
+    Character selectedCharacter = null;
+    GamePage gamePage = null;
 
-    public ChooseAccountPage(ArrayList<Account> accounts) {
+    public ChooseAccountPage(List<Account> accounts) {
         super("Choose Account and Character");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(500, 500));
+        setMinimumSize(new Dimension(600, 500));
         setLayout(new BorderLayout());
 
-        DefaultListModel<Book> dlm = new DefaultListModel<>();
+        DefaultListModel<Account> accountModel = new DefaultListModel<>();
+        int index = 0;
+        for (Account account : accounts) {
+            accountModel.add(index, account);
+            index++;
+        }
 
-        // dlm.add(0, );
+        JTextField passwordField = new JTextField("Password");
+        JList<Character> characterList = new JList<>();
 
+        JList<Account> accountList = new JList<>(accountModel);
+        accountList.setBorder(new EmptyBorder(10, 10, 10, 10));
+        accountList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (accountList.getSelectedIndex() < 0) return;
+                selectedAccount = accounts.get(accountList.getSelectedIndex());
+                DefaultListModel<Character> characterModel = new DefaultListModel<>();
+                characters = selectedAccount.accountCharacters;
+                int characterIndex = 0;
+                for (Character character : characters) {
+                    characterModel.add(characterIndex, character);
+                    characterIndex++;
+                }
+                characterList.setModel(characterModel);
+            }
+        });
 
-        JList<Book> list = new JList<>(dlm);
-        list.setBorder(new EmptyBorder(10, 10, 10, 10));
+        characterList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (characterList.getSelectedIndex() < 0) return;
+                selectedCharacter = characters.get(characterList.getSelectedIndex());
+            }
+        });
 
-        add(new JScrollPane(list), BorderLayout.LINE_START);
+        JButton button = new JButton("Confirm");
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (selectedCharacter == null) return;
+                if (passwordField.getText().equals(selectedAccount.info.credentials.getPassword())) {
+                    System.out.println("It worked!");
+                    setVisible(false);
+                    dispose();
+                    gamePage = new GamePage(selectedCharacter);
+                }
+            }
+        });
+
+        add(new JScrollPane(accountList), BorderLayout.LINE_START);
+        add(new JScrollPane(passwordField), BorderLayout.LINE_END);
+        add(new JScrollPane(characterList), BorderLayout.CENTER);
+        add(new JScrollPane(button), BorderLayout.PAGE_END);
         pack();
         setVisible(true);
     }
-
-    private void chooseAccountAndCharacter() {
-    }
-
-    private static void addAButton(String text, Container container) {
-        JButton button = new JButton(text);
-        button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        container.add(button);
-    }
-
 }

@@ -9,6 +9,7 @@ import WorldOfMarcel.Map.Cell.CellEnum;
 import WorldOfMarcel.Map.Enemy;
 import WorldOfMarcel.Map.Grid;
 import WorldOfMarcel.Map.Shop;
+import WorldOfMarcel.Pages.ChooseAccountPage;
 import WorldOfMarcel.Potions.Potion;
 import WorldOfMarcel.Spells.Spell;
 import org.apache.commons.io.FileUtils;
@@ -45,70 +46,73 @@ public class Game {
         System.out.println("'2' - for a colorful GUI experience");
         Scanner input = new Scanner(System.in);
         int gameMode = input.nextInt();
+        parseAccountsJSON();
+        parseStoriesJSON();
         if (gameMode == 2) {
-            parseAccountsJSON();
+            new ChooseAccountPage(accounts);
         }
-
         // automated test
         else {
-            parseAccountsJSON();
-            parseStoriesJSON();
             Account currentAccount = chooseAccount();
             Character currentCharacter = chooseCharacter(currentAccount);
 
             // Start game
             System.out.println("Generating map...\n");
-            Grid map = Grid.generateTestGrid(currentCharacter);
-            int moves = 0; // the test has 8 moves on the map
-            while (currentCharacter.currentHealth > 0) {
-                if (!map.currentCell.visited) {
-                    printStory(map.currentCell);
-                    gainUnvisitedCellXP(currentCharacter);
-                    getMoneyMaybe(currentCharacter, false);
-                }
-                map.currentCell.visited = true;
-                map.printGrid();
-
-                String command = optionsAndTakeNextCommand(currentCharacter, map.currentCell, input);
-                if (map.currentCell.type == CellEnum.ENEMY && ((Enemy) map.currentCell.cellElement).currentHealth > 0) {
-                    Enemy enemy = (Enemy) map.currentCell.cellElement;
-                    // Fight
-                    while (enemy.currentHealth > 0 && currentCharacter.currentHealth > 0) {
-                        currentCharacter.makeAutomatedAttack(enemy);
-                        if (enemy.currentHealth > 0)
-                            enemy.makeAutomatedAttack(currentCharacter);
-                        System.out.println("Health: You-> " + currentCharacter.currentHealth + '/' + currentCharacter.maxHealth + "   Enemy-> " + enemy.currentHealth + '/' + enemy.maxHealth);
-                        System.out.println("Mana: You-> " + currentCharacter.currentMana + '/' + currentCharacter.maxMana + "   Enemy-> " + enemy.currentMana + '/' + enemy.maxMana + '\n');
-                        if (enemy.currentHealth >= 0)
-                            command = optionsAndTakeNextCommand(currentCharacter, map.currentCell, input);
-                    }
-                    gainFightXP(currentCharacter);
-                    getMoneyMaybe(currentCharacter, true);
-                } else if (map.currentCell.type == CellEnum.SHOP && ((Shop) map.currentCell.cellElement).potions.size() > 0) {
-                    List<Potion> potions = ((Shop) map.currentCell.cellElement).potions;
-                    // add first potion
-                    currentCharacter.inventory.potions.add(potions.get(0));
-                    potions.remove(0);
-                    // add second potion
-                    currentCharacter.inventory.potions.add(potions.get(0));
-                    potions.remove(0);
-                    System.out.println("You bought 2 potions!");
-                } else if (map.currentCell.type == CellEnum.FINISH) {
-                    return;
-                }
-
-                // 4 moves to the right, 4 down
-                if (moves < 4) {
-                    map.goEast();
-                } else {
-                    map.goSouth();
-                }
-                moves++;
-            }
+            Grid map = Grid.generateTestGrid(5, 5, currentCharacter);
+            testGameLoop(currentCharacter, map);
         }
     }
 
-    public String optionsAndTakeNextCommand(Character currentCharacter, Cell currentCell, Scanner input) {
+    public void testGameLoop(Character currentCharacter, Grid map) {
+        int moves = 0; // the test has 8 moves on the map
+        while (currentCharacter.currentHealth > 0) {
+            if (!map.currentCell.visited) {
+                printStory(map.currentCell);
+                gainUnvisitedCellXP(currentCharacter);
+                getMoneyMaybe(currentCharacter, false);
+            }
+            map.currentCell.visited = true;
+            map.printGrid();
+
+            optionsAndTakeNextCommand(currentCharacter, map.currentCell, true);
+            if (map.currentCell.type == CellEnum.ENEMY && ((Enemy) map.currentCell.cellElement).currentHealth > 0) {
+                Enemy enemy = (Enemy) map.currentCell.cellElement;
+                // Fight
+                while (enemy.currentHealth > 0 && currentCharacter.currentHealth > 0) {
+                    currentCharacter.makeAutomatedAttack(enemy);
+                    if (enemy.currentHealth > 0)
+                        enemy.makeAutomatedAttack(currentCharacter);
+                    System.out.println("Health: You-> " + currentCharacter.currentHealth + '/' + currentCharacter.maxHealth + "   Enemy-> " + enemy.currentHealth + '/' + enemy.maxHealth);
+                    System.out.println("Mana: You-> " + currentCharacter.currentMana + '/' + currentCharacter.maxMana + "   Enemy-> " + enemy.currentMana + '/' + enemy.maxMana + '\n');
+                    if (enemy.currentHealth >= 0)
+                        optionsAndTakeNextCommand(currentCharacter, map.currentCell, true);
+                }
+                gainFightXP(currentCharacter);
+                getMoneyMaybe(currentCharacter, true);
+            } else if (map.currentCell.type == CellEnum.SHOP && ((Shop) map.currentCell.cellElement).potions.size() > 0) {
+                List<Potion> potions = ((Shop) map.currentCell.cellElement).potions;
+                // add first potion
+                currentCharacter.inventory.potions.add(potions.get(0));
+                potions.remove(0);
+                // add second potion
+                currentCharacter.inventory.potions.add(potions.get(0));
+                potions.remove(0);
+                System.out.println("You bought 2 potions!");
+            } else if (map.currentCell.type == CellEnum.FINISH) {
+                return;
+            }
+
+            // 4 moves to the right, 4 down
+            if (moves < 4) {
+                map.goEast();
+            } else {
+                map.goSouth();
+            }
+            moves++;
+        }
+    }
+
+    public String optionsAndTakeNextCommand(Character currentCharacter, Cell currentCell, boolean test) {
         String command = "";
 
         if (currentCell.type == CellEnum.ENEMY && ((Enemy) currentCell.cellElement).currentHealth > 0) {
@@ -140,31 +144,40 @@ public class Game {
             System.out.println("3 - Go south");
             System.out.println("4 - Go west");
         }
-        while (!command.equals("P"))
-            try {
-                command = readCommand(input);
-            } catch (InvalidCommandException e) {
-                System.out.println("Try 'P'");
-            }
+        if (test)
+            while (!command.equals("P"))
+                try {
+                    command = readPCommand();
+                } catch (InvalidCommandException e) {
+                    System.out.println("Try 'P'");
+                }
+        else
+            command = readCommand();
         return command;
     }
 
-    private String readCommand(Scanner input) throws InvalidCommandException {
+    public String readCommand() {
+        Scanner input = new Scanner(System.in);
+        return input.next();
+    }
+
+    public String readPCommand() throws InvalidCommandException {
+        Scanner input = new Scanner(System.in);
         String command = input.next();
         if (!command.equals("P"))
             throw new InvalidCommandException();
         return command;
     }
 
-    private void printStory(Cell currentCell) {
+    public void printStory(Cell currentCell) {
         CellEnum cellType = currentCell.type;
         Random rand = new Random();
         int randomNum = rand.nextInt(stories.get(cellType).size());
         System.out.print('\n' + stories.get(cellType).get(randomNum) + '\n');
     }
 
-    private void parseAccountsJSON() throws IOException {
-        File file = new File("src/WorldOfMarcel/res/accounts.json");
+    public void parseAccountsJSON() throws IOException {
+        File file = new File("res/accounts.json");
         String accountsToString = FileUtils.readFileToString(file, "utf-8");
         JSONObject accountsToJson = new JSONObject(accountsToString);
         JSONArray jsonArray = (JSONArray) accountsToJson.get("accounts");
@@ -214,8 +227,8 @@ public class Game {
         }
     }
 
-    private void parseStoriesJSON() throws IOException {
-        File file = new File("src/WorldOfMarcel/res/stories.json");
+    public void parseStoriesJSON() throws IOException {
+        File file = new File("res/stories.json");
         String storiesToString = FileUtils.readFileToString(file, "utf-8");
         JSONObject storiesToJson = new JSONObject(storiesToString);
         JSONArray jsonArrayStories = (JSONArray) storiesToJson.get("stories");
@@ -235,7 +248,7 @@ public class Game {
         }
     }
 
-    private Account chooseAccount() {
+    public Account chooseAccount() {
         Scanner input = new Scanner(System.in);
         System.out.println("Loading data...");
         int accountIndex = 1;
@@ -250,7 +263,7 @@ public class Game {
             System.out.println("Please choose the account you want to log in as, typing the corresponding number:");
             while (!command.equals("P"))
                 try {
-                    command = readCommand(input);
+                    command = readPCommand();
                 } catch (InvalidCommandException e) {
                     System.out.println("Try 'P'");
                 }
@@ -264,7 +277,7 @@ public class Game {
 
             while (!pass.equals("P"))
                 try {
-                    pass = readCommand(input);
+                    pass = readPCommand();
                 } catch (InvalidCommandException e) {
                     System.out.println("Try 'P'");
                 }
@@ -279,7 +292,7 @@ public class Game {
         return currentAccount;
     }
 
-    private Character chooseCharacter(Account currentAccount) {
+    public Character chooseCharacter(Account currentAccount) {
         Scanner input = new Scanner(System.in);
         System.out.println("Fetching your characters...");
         List<Character> characters = currentAccount.accountCharacters;
@@ -292,7 +305,7 @@ public class Game {
         String command = "";
         while (!command.equals("P"))
             try {
-                command = readCommand(input);
+                command = readPCommand();
             } catch (InvalidCommandException e) {
                 System.out.println("Try 'P'");
             }
@@ -330,7 +343,7 @@ public class Game {
         checkLevel(currentCharacter);
     }
 
-    private void checkLevel(Character currentCharacter) {
+    public void checkLevel(Character currentCharacter) {
         if (currentCharacter.XP >= 100) {
             int difference = currentCharacter.XP - 100;
             currentCharacter.Lvl++;
